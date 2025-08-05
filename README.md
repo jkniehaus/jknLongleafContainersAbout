@@ -4,8 +4,6 @@ This guide documents the setup of a writable Apptainer (formerly Singularity) co
 
 ---
 
-## ✅ Prerequisites
-
 Load Apptainer on the cluster:
 
 ```bash
