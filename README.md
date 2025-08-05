@@ -85,6 +85,6 @@ install.packages("tidyverse")
 quit()
 #exit interactive mode
 exit
-```
+```bash
 #FINALLY build your .sif file
 apptainer build srrAlign.sif srrAlign/
