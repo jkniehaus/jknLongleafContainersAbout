@@ -11,9 +11,9 @@ Load Apptainer on the cluster:
 ```bash
 module add apptainer
 
-# Create a sandbox Container
+# Create sandbox Container
 apptainer build --sandbox srrAlign/ docker://ubuntu:22.04
-#Create the required mount directories for longleaf
+#Create req mount directories for UNC longleaf
 mkdir -p srrAlign/nas
 mkdir -p srrAlign/proj
 mkdir -p srrAlign/work
@@ -87,3 +87,4 @@ exit
 
 #FINALLY build your .sif file
 apptainer build srrAlign.sif srrAlign/
+#now we should be able to add srrAlign.sif as our container for our bulk RNA-seq nextflow pipeline
