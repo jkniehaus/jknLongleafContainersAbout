@@ -71,8 +71,7 @@ apt-get update
 apt-get install -y r-base
 
 #Next, install what we use in R:
-
-```R
+R
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
@@ -85,6 +84,6 @@ install.packages("tidyverse")
 quit()
 #exit interactive mode
 exit
-```bash
+
 #FINALLY build your .sif file
 apptainer build srrAlign.sif srrAlign/
