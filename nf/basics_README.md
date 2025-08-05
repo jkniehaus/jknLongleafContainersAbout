@@ -1,10 +1,10 @@
 # reqs
-Configuration file (with SLURM executor so slurm jobs are fired away for each process)
+Configuration file (with SLURM executor so slurm jobs are fired away for each process)\n
 Container with environment (apptainer; formerly singularity)
 # Structure
-modules directory:
-  defines processes, inputs, outputs
-  defines HPC resource usage
+modules directory:\n
+  defines processes, inputs, outputs\n
+  defines HPC resource usage\n
 main.nf
   pipeline file
   pulls processes from modules directory (e.g.  `include { process } from './modules/myProcess.nf')`
