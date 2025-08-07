@@ -4,10 +4,9 @@ This guide documents the setup of a writable Apptainer (formerly Singularity) co
 
 ---
 
-Load Apptainer on the cluster:
-
+Load Apptainer on the cluster (assumes apptainer is installed in environment)
 ```bash
-module add apptainer
+
 
 # Create sandbox Container
 apptainer build --sandbox srrAlign/ docker://ubuntu:22.04
@@ -53,6 +52,7 @@ make -j16
 make install
 make -j16
 make install
+cp samtools /usr/local/bin
 
 # trimmomatic
 cd /opt
