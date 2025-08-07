@@ -22,14 +22,26 @@ mkdir -p srrAlign/datacommons
 apptainer shell --writable --fakeroot --no-mount all srrAlign/
 
 #update the system and get your basic tools
-apt-get update
-apt-get install -y build-essential curl wget git unzip ca-certificates
-apt-get install zlib1g-dev
-apt-get install xxd
-apt-get install cmake
-apt-get install libncurses-dev
-apt-get install libbz2-dev
-apt-get install liblzma-dev
+apt-get update && apt-get install -y \
+        build-essential \
+        curl \
+        wget \
+        git \
+        unzip \
+        ca-certificates \
+        zlib1g-dev \
+        xxd \
+        cmake \
+        libncurses-dev \
+        libbz2-dev \
+        liblzma-dev \
+        software-properties-common \
+        locales \
+        default-jdk
+
+# Locale setup to avoid R warnings
+locale-gen en_US.UTF-8
+update-locale LANG=en_US.UTF-8
 #Tool Installation
 # STAR
 cd /opt
@@ -86,3 +98,8 @@ exit
 #FINALLY build your .sif file
 apptainer build srrAlign.sif srrAlign/
 #now we should be able to add srrAlign.sif as our container for our bulk RNA-seq nextflow pipeline
+```
+# In parallel, make a corresponding definition file based on what we're installing
+# With a definition file in place, generating a new .sif contain is easy. assuming you have definition file srrAlign.def:
+apptainer build srrBulkRNAseq_trim_starsalmon.sif srrAlign.def
+
