@@ -1,0 +1,110 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+
+    # Basic system prep
+    apt-get update && apt-get install -y \
+        build-essential \
+        curl \
+        wget \
+        git \
+        unzip \
+        ca-certificates \
+        zlib1g-dev \
+        xxd \
+        cmake \
+        libncurses-dev \
+        libbz2-dev \
+        liblzma-dev \
+        software-properties-common \
+        locales \
+        default-jdk
+
+    # Locale setup to avoid R warnings
+    locale-gen en_US.UTF-8
+    update-locale LANG=en_US.UTF-8
+
+    # Create mount directories; was needed for UNC HPC Longleaf
+    mkdir -p /nas /proj /work /users /overflow /datacommons
+
+    # -------------------------
+    # Install STAR (v2.7.11b)
+    # -------------------------
+    cd /opt
+    git clone --branch 2.7.11b https://github.com/alexdobin/STAR.git
+    cd STAR
+    make STAR
+    cp STAR /usr/local/bin/
+
+    # -------------------------
+    # Install Salmon (v1.10.0)
+    # -------------------------
+    cd /opt
+    wget https://github.com/COMBINE-lab/salmon/releases/download/v1.10.0/salmon-1.10.0_linux_x86_64.tar.gz
+    tar xzvf salmon-1.10.0_linux_x86_64.tar.gz
+    cp salmon-latest_linux_x86_64/bin/salmon /usr/local/bin
+
+    # -------------------------
+    # Install Samtools (v1.22.1)
+    # -------------------------
+    cd /opt
+    wget https://github.com/samtools/samtools/releases/download/1.22.1/samtools-1.22.1.tar.bz2
+    tar -xjf samtools-1.22.1.tar.bz2
+    cd samtools-1.22.1
+    ./configure
+    make -j$(nproc)
+    make install
+    cp samtools /usr/local/bin
+
+    # -------------------------
+    # Install Trimmomatic (v0.39)
+    # -------------------------
+    cd /opt
+    wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
+    unzip Trimmomatic-0.39.zip
+    cp Trimmomatic-0.39/trimmomatic-0.39.jar /usr/local/bin/trimmomatic.jar
+    echo '#!/bin/bash\njava -jar /usr/local/bin/trimmomatic.jar "$@"' > /usr/local/bin/trimmomatic
+    chmod +x /usr/local/bin/trimmomatic
+
+    # -------------------------
+    # Install R 4.4.0 and R packages
+    # -------------------------
+    add-apt-repository -y ppa:marutter/rrutter4.0
+    apt-get update && apt-get install -y \
+        r-base \
+        r-base-dev
+
+    # Fix broken or pending installs (e.g., pkgconf, r-base-dev)
+    apt-get install -f -y
+    dpkg --configure -a
+
+    # Install core R packages
+    Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager", repos="https://cloud.r-project.org")'
+    Rscript -e 'BiocManager::install(version="devel", ask=FALSE)'
+    Rscript -e 'BiocManager::install(c("edgeR", "tximport"), ask=FALSE)'
+    Rscript -e 'install.packages("tidyverse", repos="https://cloud.r-project.org")'
+
+    # Clean up to reduce final image size
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    export PATH=/usr/local/bin:$PATH
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+
+%labels
+    Author Jesse
+    Version 1.0
+    Description "RNA-seq container with STAR, Salmon, Samtools, Trimmomatic, and R with Bioconductor"
+
+%help
+    This container was built from Ubuntu 22.04 and includes key RNA-seq tools:
+    - STAR 2.7.11b
+    - Salmon 1.10.0
+    - Samtools 1.22.1
+    - Trimmomatic 0.39
+    - R 4.4.0 with edgeR, tximport, and tidyverse
+    - Java runtime for Trimmomatic
