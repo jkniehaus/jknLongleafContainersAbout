@@ -101,5 +101,6 @@ apptainer build srrAlign.sif srrAlign/
 ```
 # In parallel, make a corresponding definition file based on what we're installing
 # With a definition file in place, generating a new .sif contain is easy. assuming you have definition file srrAlign.def:
+```bash
 apptainer build srrBulkRNAseq_trim_starsalmon.sif srrAlign.def
-
+```
